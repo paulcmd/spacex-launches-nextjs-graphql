@@ -1,11 +1,10 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 export default function Home({ launches }) {
-
-  console.log('launches',launches)
+  console.log("launches", launches);
   return (
     <div className={styles.container}>
       <Head>
@@ -19,9 +18,7 @@ export default function Home({ launches }) {
           Welcome to <a href="https://www.spacex.com/">SpaceX Launches!</a>
         </h1>
 
-        <p className={styles.description}>
-          Latest launhes from SpaceX
-        </p>
+        <p className={styles.description}>Latest launhes from SpaceX</p>
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
@@ -60,23 +57,48 @@ export default function Home({ launches }) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
       </footer>
     </div>
-  )
+  );
 }
 
-
-
 export async function getStaticProps() {
+  const client = new ApolloClient({
+    uri: "http://api.spacex.land/graphql/",
+    cache: new InMemoryCache(),
+  });
 
-  return{
+  const { data } = await client.query({
+    query: gql`
+      {
+        launchesPast(limit: 10) {
+          mission_name
+          launch_date_local
+          links {
+            article_link
+            video_link
+            mission_patch
+          }
+          rocket {
+            rocket_name
+          }
+          id
+          launch_site {
+            site_name_long
+          }
+        }
+      }
+    `,
+  });
+
+  return {
     props: {
-      launches: []
-    }
-  }
+      launches: [data],
+    },
+  };
 }
