@@ -1,8 +1,11 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 
-export default function Home() {
+export default function Home({ launches }) {
+
+  console.log('launches',launches)
   return (
     <div className={styles.container}>
       <Head>
@@ -13,12 +16,11 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to <a href="https://www.spacex.com/">SpaceX Launches!</a>
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
+          Latest launhes from SpaceX
         </p>
 
         <div className={styles.grid}>
@@ -66,4 +68,15 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+
+
+export async function getStaticProps() {
+
+  return{
+    props: {
+      launches: []
+    }
+  }
 }
