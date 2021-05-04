@@ -5,6 +5,7 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 export default function Home({ launches }) {
   console.log("launches", launches);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -18,36 +19,23 @@ export default function Home({ launches }) {
           Welcome to <a href="https://www.spacex.com/">SpaceX Launches!</a>
         </h1>
 
-        <p className={styles.description}>Latest launhes from SpaceX</p>
+        <p className={styles.description}>Latest launches from SpaceX</p>
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          {launches.map((launch) => {
+            return (
+              <a
+                key={launch.id}
+                href={launch.links.video_link}
+                className={styles.card}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <h3>{launch.mission_name}</h3>
+                <p>{launch.launch_site.site_name_long}</p>
+              </a>
+            );
+          })}
         </div>
       </main>
 
@@ -76,7 +64,7 @@ export async function getStaticProps() {
   const { data } = await client.query({
     query: gql`
       {
-        launchesPast(limit: 10) {
+        launchesPast(limit: 4) {
           mission_name
           launch_date_local
           links {
@@ -98,7 +86,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      launches: [data],
+      launches: data.launchesPast,
     },
   };
 }
